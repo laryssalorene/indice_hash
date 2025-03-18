@@ -32,9 +32,12 @@ class HashIndexApp:
         # Botão para fazer table scan
         tk.Button(self.root, text="Table Scan", command=self.table_scan).grid(row=3, column=1)
         
+        # Botão para limpar resultados
+        tk.Button(self.root, text="Limpar", command=self.limpar_resultados).grid(row=3, column=2)
+        
         # Área para mostrar resultados
         self.text_resultados = tk.Text(self.root, height=10, width=50)
-        self.text_resultados.grid(row=4, column=0, columnspan=2)
+        self.text_resultados.grid(row=4, column=0, columnspan=3)
 
     def carregar_arquivo(self):
         try:
@@ -79,13 +82,14 @@ class HashIndexApp:
         tupla, pagina, custo = self.hash_index.buscar_tupla(chave)
         
         # Exibe o resultado na interface gráfica
-        self.text_resultados.delete(1.0, tk.END)  # Limpa o conteúdo anterior
+        self.text_resultados.insert(tk.END, f"Buscar com Índice Hash:\n")
         if tupla:
             self.text_resultados.insert(tk.END, f"Chave encontrada: {tupla.dados}\n")
             self.text_resultados.insert(tk.END, f"Página: {pagina}\n")
             self.text_resultados.insert(tk.END, f"Custo: {custo} páginas lidas\n")
         else:
             self.text_resultados.insert(tk.END, "Chave não encontrada.\n")
+        self.text_resultados.insert(tk.END, "-" * 50 + "\n")  # Separador
 
     def table_scan(self):
         chave = self.entry_chave_busca.get()
@@ -94,7 +98,9 @@ class HashIndexApp:
             return
         
         custo = 0
-        self.text_resultados.delete(1.0, tk.END)  # Limpa o conteúdo anterior
+        
+        # Exibe o resultado na interface gráfica
+        self.text_resultados.insert(tk.END, f"Table Scan:\n")
         
         # Percorre todas as páginas e tuplas
         for i, pagina in enumerate(self.tabela.paginas):
@@ -104,10 +110,18 @@ class HashIndexApp:
                     self.text_resultados.insert(tk.END, f"Chave encontrada na posição {i}: {tupla.dados}\n")
                     self.text_resultados.insert(tk.END, f"Página: {i}\n")
                     self.text_resultados.insert(tk.END, f"Custo: {custo} páginas lidas\n")
+                    self.text_resultados.insert(tk.END, "-" * 50 + "\n")  # Separador
                     return
         
         # Se a chave não for encontrada
         self.text_resultados.insert(tk.END, "Chave não encontrada.\n")
+        self.text_resultados.insert(tk.END, "-" * 50 + "\n")  # Separador
+
+    def limpar_resultados(self):
+        """
+        Limpa a área de resultados.
+        """
+        self.text_resultados.delete(1.0, tk.END)
 
 if __name__ == "__main__":
     root = tk.Tk()
